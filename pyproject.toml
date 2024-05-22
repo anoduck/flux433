@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "myflux"
+version = "0.1.0"
+description = "A python script to import rtl_433 json output to influxdb"
+authors = ["anoduck <11767-anoduck@users.noreply.gitgud.io>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+simple-parsing = "^0.1.5"
+configobj = "^5.0.8"
+alive-progress = "^3.1.5"
+influxdb = "^5.3.2"
+chardet = "^5.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
