@@ -18,12 +18,16 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+# Much of the source code of this project was taken from:
+# https://github.com/azrdev/rtl433_influx/.
+
 from simple_parsing import parse
 from dataclasses import dataclass
 from alive_progress import alive_it
 from configobj import ConfigObj
 from configobj.validate import Validator
-from uuid import uuid4 as uuid
+import uuid
 import chardet
 import json
 from ast import literal_eval
@@ -155,6 +159,11 @@ def detect_encoding(file):
     return detector.result['encoding'] 
 
 
+def sanitize(raw_name):
+    text = str(raw_name)
+    model_name = text.replace("-", "_").replace(" ", "_").replace("/", "_").replace(".", "_").replace("&", "")
+    return model_name
+
 def load_files(config, path):
     client = InfluxDBClient('localhost', 8086, config['user'], config['pass'], config['db'])
     for file in path:
@@ -162,6 +171,8 @@ def load_files(config, path):
         with open(file, 'r', encoding=encoding, errors='ignore') as f:
             contents = f.readlines()
             for line in alive_it(contents):
+                if not 'model' in line:
+                    continue
                 try:
                     json_dict = json.loads(line)
                 except JSONDecodeError as e:
@@ -169,18 +180,23 @@ def load_files(config, path):
                     print("Error encountered while processing: {}".format(file))
                     continue
                 test_name = json_dict.get('model')
+                print(type(test_name))
                 if test_name != 'name':
-                    name = test_name
+                    raw_name = test_name
                 else:
-                    name = uuid()
+                    raw_name = uuid.uuid4()
+                model_name = sanitize(raw_name)
+                print(model_name)
+                print(type(model_name))
                 mtime = json_dict.get('time')
                 stptime = mtime.strip("@").strip("'").strip("s")
                 nstime = literal_eval(stptime)
                 unixtime = nstime * 10**10
                 date_time = datetime.fromtimestamp(unixtime)
-                jtime = date_time.strftime('%Y-%m-%dT%H:%M:%S')
+                jtime = date_time.isoformat()
+                print(jtime)
                 json_out = {
-                        'measurement': str(name),
+                        'measurement': model_name,
                         'time': str(jtime), # TODO: timezone?
                         'tags': {},
                         'fields': {},

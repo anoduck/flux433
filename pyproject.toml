@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "myflux"
+name = "flux433"
 version = "0.1.0"
 description = "A python script to import rtl_433 json output to influxdb"
 authors = ["anoduck <11767-anoduck@users.noreply.gitgud.io>"]
