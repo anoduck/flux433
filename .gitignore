@@ -382,3 +382,9 @@ fabric.properties
 
 
 test-files/g015_433.92M_250k-2024-04-17-decode-mod-flex0.json
+influxdb_client-test.py
+g001_433.92M_250k.cu8
+g002_433.92M_250k.cu8
+g003_433.92M_250k.cu8
+test.json
+test.txt
