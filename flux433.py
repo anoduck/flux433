@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Copyright (C) 2024  anoduck
+# Copyright (C) 2024  anoduck, The Anonymous Duck
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -18,17 +18,18 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
-# Much of the source code of this project was taken from:
-# https://github.com/azrdev/rtl433_influx/.
+# --------------------------------------------------------------------------
+# Much of / a bountiful proportionment / a lot / a whole butt load 
+#       of the source code of this project was taken from:
+#           https://github.com/azrdev/rtl433_influx/.
+# For which, I neither claim nor take acclaim of, as that shit is not mine.
+# I keep it real.
 
 from simple_parsing import parse
 from dataclasses import dataclass
 from alive_progress import alive_it
 from configobj import ConfigObj
 from configobj.validate import Validator
-import pandas as pd
-import uuid
 import chardet
 import json
 from ast import literal_eval
@@ -48,9 +49,9 @@ cfg = """
 ## This software is released under the MIT License.
 ## https: //opensource.org/licenses/MIT
 ## ----------------------------------------------------------------------------
-## Please do not leave username and password unmodified and without quotes.
+## You will need to edit this file and add the appropriate values.
 ## --------------------------------------------------------------------------------
-## *L00k* -- WARNING: ALL VALUES MUST BE CONTAINED IN SINGLE QUOTES -- *L00k*
+## *L00k* -- WARNING: ALL VALUES MUST BE CHANGED and PRESENT -- *L00k*
 ## --------------------------------------------------------------------------------
 
 # Organization configured in influxdb
@@ -161,9 +162,6 @@ def detect_encoding(file):
     return detector.result['encoding'] 
 
 
-
-
-
 def sanitize_text(raw_name):
     text = str(raw_name)
     model_name = text.replace(" ", "_").replace("/", "_").replace(".", "_").replace("&", "")
@@ -186,46 +184,58 @@ def sanitize_field(field):
 
 
 def list_of_dicts(label, label_data):
-    if len(label_data) > 1:
-        row_list = []
-        rows = label_data.get('rows')
-        row_range = range(1, len(rows))
-        for n in row_range:
-            row = rows[n]
-            row_id = label + str(n)
-            entry_list = []
-            for key, value in row.items():
-                data = str(f'{key}={value}')
-                entry_list.append(data)
-            list_entry = row_id + str(entry_list)
-            print(f'Row List for {label} is {list_entry}') # type: ignore
-        row_list.append(list_entry)
-        ret_val = row_list
-    if len(label_data) == 1:
-        print(label_data)
-        row = label_data[0]
+    print(label_data)
+    print(f'Label Data is type: {type(label_data)}')
+    ret_val = ''
+    num_rows = len(label_data)
+    if num_rows > 1:
+        instance = label_data[0]
+        if isinstance(instance, dict):
+            row_list = []
+            row_count = 0
+            # Consume one list per turn
+            for row in label_data:
+                entry_list = ''
+                # convert list of dicts to a list of strings
+                for key, value in row.items():
+                    data = str(f'{key}="{value}"')
+                    entry_list += ',' + data
+                if entry_list.startswith(','):
+                    entry_list = entry_list[1:]
+                row_id = str(f'row_id="row{row_count}"')
+                list_entry = str(f'{row_id},{entry_list}')
+                if list_entry not in row_list:
+                    row_list.append(list_entry)
+                row_count += 1
+            ret_val += str(row_list)
+            ret_val = ret_val.replace(" ", "")
+        elif isinstance(instance, str):
+            print(f'Single row string for {label} is {label_data}')
+            ret_val = str(f'{label}="{label_data}"')
+            ret_val = ret_val.replace(" ", "")
+    if num_rows == 1:
         entry_list = ''
-        print(type(row))
-        if isinstance(row, dict):
+        rows = label_data[0]
+        print(type(rows))
+        if isinstance(rows, dict):
             print(f'Single row dict for {label} is {row}')
             for key, value in row.items():
-                # value = sanitize_field(value)
-                data = str(f'{key}={value}')
+                data = str(f'{key}="{value}"')
                 entry_list += ',' + data
             if entry_list.startswith(','):
                 entry_list = entry_list[1:]
-            # ret_val = '{}={}'.format(label, entry_list)
-            ret_val = entry_list
-        elif isinstance(row, str):
+            ret_val += ',' + str(entry_list)
+        elif isinstance(rows, str):
             print(f'Single row string for {label} is {row}')
-            # row = sanitize_field(row)
-            ret_val = '{}={}'.format(label, row)
+            ret_val = str(f'{label}="{row}"')
             ret_val = ret_val.replace(" ", "")
         else:
             print(f'Could not process {label} {row}')
     if isinstance(ret_val, list):
+        print(f'List of dicts returned {ret_val} as list')
         return str(ret_val)
     elif isinstance(ret_val, str):
+        print(f'List of dicts returned {ret_val} as string')
         return ret_val
     else:
         print(f'Could not process {label} {label_data}')
@@ -277,15 +287,12 @@ def load_files(config, path):
                 # Fields: are not indexed, represent data, and should be unique
                 # Tags: are indexed, represent metadata, and are not unique
                 # --------------------------------------------------------------------
-                ## Below is to be reworked
-                fieldstr = str()
+                fieldstr = str(f'seen=1')
                 if 'rows' in json_dict.keys():
                     row_data = json_dict.pop('rows')
                     ld_items = list_of_dicts(label='row', label_data=row_data)
                     fieldstr += ',' + str(ld_items)
                     print(f'After rows, fieldstr is {fieldstr}')
-                if 'num_rows' in json_dict.keys():
-                    del json_dict['num_rows']
                 if 'codes' in json_dict.keys():
                     code_data = json_dict.pop('codes')
                     cd_items = list_of_dicts(label='code', label_data=code_data)
@@ -296,23 +303,20 @@ def load_files(config, path):
                         value = value or (lambda x : x)
                         try:
                             value = json_dict.pop(key)
-                            set_entry = '{}={}'.format(key, value)
+                            set_entry = str(f'{key}="{value}"')
                             fieldstr += ',' + str(set_entry)
                             print(f'After {key}, fieldstr is {fieldstr}')
                         except Exception as e:
                             value = json_dict.get(key)
                             print('error {} mapping {}'.format(e, value))
                             continue
-                # tag_set = str()
-                # if len(json_dict) > 0:
-                #     for key in json_dict.keys():
-                #         value = json_dict.get(key)
-                #         tag_entry = '{}={}'.format(key, str(value))
-                #         tag_set += ',' + str(tag_entry)
-                # fname_entry = '{}={}'.format('filename', file_name)
-                # tag_set += ',' + str(fname_entry)
+                tag_set = str()
                 file_name = sanitize_text(file_name)
-                tag_set = str(f'source=json,file={file_name}')
+                tag_set = str(f'source="json",file="{file_name}"')
+                if len(json_dict) > 0:
+                    for key, value in json_dict.items():
+                        tag_entry = str(f'{key}="{value}"')
+                        tag_set += ',' + str(tag_entry)
                 print(fieldstr)
                 if len(fieldstr) == 0:
                     print('no fields to write', file=sys.stderr)
@@ -328,7 +332,7 @@ def load_files(config, path):
                         # "h2o_feet,location=coyote_creek water_level=2.0 2",
                         # "h2o_feet,location=coyote_creek water_level=3.0 3"
                         # ])
-                LPE = str(f'{model_name},{tag_set} {fieldstr} {jtime}')
+                LPE = str(f'{model_name},{tag_set} {fieldstr}')
                 print(f'Record to write as LPE: {LPE}')
                 print(f'LPE type is {type(LPE)}')
                 try:
@@ -358,19 +362,10 @@ def create_test(config):
     client = InfluxDBClient(url="http://127.0.0.1:8086",
                             token=api, org=org)
     write_api = client.write_api(write_options=SYNCHRONOUS)
-    ## As Pandas Data Frame
-    test_data = ''
-    testdf = pd.read_csv(test_data)
-    write_api.write("my-bucket", "my-org", record=testdf, 
-                   data_frame_measurement_name='h2o_feet', 
-                   data_frame_tag_columns=['location']
-    ## As Line Protocol Entry
-    timestamp = datetime.now().isoformat()
-    data = "len=25,data=0147f98,code={25}0147f98"
-    LPE = str(f"test_model,source=test_batch {data} {timestamp}")
+    data = 'code="{25}0147f98"'
+    LPE = str(f"test_model,source=test_batch {data}")
     print(f'Record to write as LPE: {LPE}')
     print(f'LPE type is {type(LPE)}')
-    pddata = ''
     try:
         write_api.write(bucket=bucket, record=LPE)
     except Exception as e:
