@@ -1,6 +1,7 @@
 ### Custom additions
 config.ini
 test-files
+flux433.py
 
 ### https://raw.github.com/github/gitignore/4488915eec0b3a45b5c63ead28f286819c0917de/Python.gitignore
 
@@ -389,3 +390,8 @@ g003_433.92M_250k.cu8
 test.json
 test.txt
 problem.json
+rtl433.service
+rtl433json_to_influx.service
+flux433.log.1
+config.ini.backup
+setup.sh

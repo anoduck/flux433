@@ -13,6 +13,7 @@ configobj = "^5.0.8"
 alive-progress = "^3.1.5"
 chardet = "^5.2.0"
 influxdb-client = "^1.43.0"
+python-dateutil = "^2.9.0.post0"
 
 
 [build-system]
