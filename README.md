@@ -16,17 +16,19 @@ The purpose of this project is the creation of a repository of decoded rtl_433 c
 
 Another planned feature is a continual query that will work towards removal of duplicate entries, while increasing the count of how many times the capture was seen.
 
-## Install
+### Installation
 
-```sh
-poetry install
-```
+You got two choices for installation, well... actually three. The big decision is if you want to run it as a service or not. If not, then either poetry or pipenv should work. If you want to run it as a service, then you will use the `setup.sh` script. The `setup.sh` script will create a systemd service that will run the script.
 
-## Usage
+### Uninstall
+
+If you installed it as a service and want to uninstall it, then you can use the `uninstall.sh` script. If you recieve some error that looks like `userdel: user flux433 is currently used by process 1962204`, then you can use the `kill` command to kill the process.
+
+### Usage
 
 I have never quite understood why some developers have relied on command line flags and arguments to configure their projects when it was not necessary, so as usual I have allowed some of the configuration to occur via a configuration file. As usual with some of my projects, an empty configuration file is created for the user when first run.
 
-### Configuration File
+#### Configuration File
 
 The spec for the configuration file is as follows:
 
@@ -58,10 +60,10 @@ log_file = string(default='flux433.log')
 
 ### CLI arguments
 
-As of this moment, the only flag that you should be concerned with is the `--path` flag. The other flag, `--test`, was for testing purposes, and will be removed in the future.
+There are two arguments that can be passed to the script. The first is the path to the directory that contains the JSON files to process. The second is the path to the configuration file.
 
 ```sh
-poetry run python flux433/start.py --path <path-to-dir or json-file>
+poetry run python flux433/start.py --path <path-to-dir or json-file> --config <path-to-config-file>
 ```
 
 ## Author
