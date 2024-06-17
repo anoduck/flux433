@@ -73,7 +73,7 @@ systemd = boolean(default=False)
 log_level = string(default='INFO')
 
 # Log file
-log_file = string(default='/var/log/flux433.log')
+log_file = string(default='/opt/flux433/flux433.log')
 """
 
 
