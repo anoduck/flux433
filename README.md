@@ -10,11 +10,11 @@
 
 ## Intro
 
-This project began life as [rtl433_influx](https://github.com/azrdev/rtl433_influx), was upgraded from InfluxDB v1.x to Influxdb v2.x. If I had known what a pain it would be to make this jump in versions, I never wouild have done it. But, being the INTP, I couldn't stop until it was working. It generates a ridiculously absurd amount of output in it's current form, that will be changed in the next push or so with the integration of logging and log levels. 
+This project began life as [rtl433_influx](https://github.com/azrdev/rtl433_influx), was upgraded from InfluxDB v1.x to Influxdb v2.x. If I had known what a pain it would be to make this jump in versions, I never wouild have done it. But, being me, I couldn't stop until it was working. 
 
 The purpose of this project is the creation of a repository of decoded rtl_433 captures, documenting when they were captured, how many times they were seen, and provide a means to catalog unidentified captures for further analysis.
 
-The next release will probably move the project more towards running as a system service in the background, importing json files exported from rtl_433 in `/var/lib/flux433`, and removing those files once successfully processed into influxdb. Another planned feature is a continual query that will work towards removal of duplicate entries, while increasing the count of how many times the capture was seen.
+Another planned feature is a continual query that will work towards removal of duplicate entries, while increasing the count of how many times the capture was seen.
 
 ## Install
 
