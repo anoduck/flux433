@@ -2,7 +2,7 @@
 Description=flux433
 
 [Service]
-ExecStart=/opt/flux433/flux433/start.py --config /opt/flux433/config.ini --path /var/lib/flux433 
+ExecStart=/opt/flux433/flux433/start.py --config /opt/flux433/config.ini --path /var/run/flux433 
 # with systemd >= 232 use named fds, as per <https://serverfault.com/questions/791395/can-systemd-manage-a-pipeline/823973>
 User=flux433
 

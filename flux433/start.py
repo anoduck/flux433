@@ -32,6 +32,7 @@ import os
 import sys
 from flux import FluxFile
 from proclog import f433Log
+from subproc import Run_RTL_433
 
 cfg = """
 ## Configuration file for myflux
@@ -55,6 +56,7 @@ api = string(default='replace with generated API token')Options = parse(options,
 bucket = string(default='replace with bucket name')
 
 # Watch for new files?
+# If set to true, remove will be ignored
 watch = boolean(default=False)
 
 # Remove files when processed?
@@ -62,6 +64,10 @@ remove = boolean(default=False)
 
 # Path to Dir of JSON files or Json File
 path = string(default='~/Sandbox/ISM-Research')
+
+# Systemd service
+# If set to true, watch and remove will be ignored
+systemd = boolean(default=False)
 
 # Log level
 log_level = string(default='INFO')
@@ -81,13 +87,12 @@ class options:
         path (str): Path to Dir of JSON files or Json File
     """
     config: str = 'config.ini'  # Configuration file
-    path: str = ''  # Path to Dir of JSON files or Json File
+    path: str = ''  # Path to Dir of JSON files or Json File (not for usage with systemd service)
 
 
 class Flux433:
     
     def __init__(self):
-        self.FF = FluxFile()
         self.Options = parse(options, dest="Options")
         
     def pathfinder(self, path):
@@ -122,7 +127,19 @@ class Flux433:
             path = self.pathfinder(self.Options.path)
         else:
             path = self.pathfinder(config['path'])
-        self.FF.load_files(config, path, self.log)
+        if config['systemd']:
+            self.log.info("Running as systemd service")
+            self.log.info("Watch is set to: {}".format(config['watch']))
+            self.log.info("Remove is set to: {}".format(config['remove']))
+            self.log.info("Path is set to: {}".format(config['path']))
+            start_433 = Run_RTL_433()
+            start_433.run(config, path, self.log)
+        if self.Options.path != '':
+            path = self.pathfinder(self.Options.path)
+        else:
+            path = self.pathfinder(config['path'])
+        FF = FluxFile()
+        FF.load_files(config, path, watch=config['watch'], remove=config['remove'], log=self.log)
 
 
 if __name__ == '__main__':

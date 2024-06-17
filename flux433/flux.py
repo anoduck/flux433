@@ -47,7 +47,7 @@ class FluxFile:
             self.log.info('Waiting for files')
             sleep(30)
     
-    def load_files(self, config, path, log):
+    def load_files(self, config, path, watch, remove, log):
         """
         Completely rewrite this shit.
         After hours of troubleshooting, it finally dawned on me,
@@ -57,7 +57,6 @@ class FluxFile:
         org = config['org']
         api = config['api']
         bucket = config['bucket']
-        watch = config['watch']
         if watch:
             self.watch(path, log)
         self.log.info('Client parameters: Org={}, API={}, Bucket={}'.format(org, api, bucket))
@@ -157,13 +156,10 @@ class FluxFile:
                         self.log.info("error {} writing {}".format(
                             e, LPE), file=sys.stderr)
                         exit(1)
-            if config['remove']:
+            if remove:
                 self.log.info('File removal is enabled')
                 self.log.info('Removing: {}'.format(file))
                 f.close()
                 os.remove(file)
         if watch:
             self.watch(path, log)
-        else:
-            self.log.info('Processing complete')
-            exit(0)
