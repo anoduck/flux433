@@ -1,10 +1,10 @@
 [Unit]
-Description=rtl_433
+Description=flux433
 
 [Service]
-ExecStart=/home/rtl433sdr/bin/rtl_433 -q -s 1024000 -F json:/run/rtl433 -M utc -G
+ExecStart=/opt/flux433/flux433/start.py --config /opt/flux433/config.ini --path /var/lib/flux433 
 # with systemd >= 232 use named fds, as per <https://serverfault.com/questions/791395/can-systemd-manage-a-pipeline/823973>
-User=rtl433sdr
+User=flux433
 
 [Install]
 WantedBy=multi-user.target

@@ -80,6 +80,7 @@ class options:
     Args:
         path (str): Path to Dir of JSON files or Json File
     """
+    config: str = 'config.ini'  # Configuration file
     path: str = ''  # Path to Dir of JSON files or Json File
 
 
@@ -102,8 +103,7 @@ class Flux433:
 
 
     def main(self):
-        conf_file = "config.ini"
-        conf_path = os.path.realpath(conf_file)
+        conf_file = self.Options.config
         config = ConfigObj()
         spec = cfg.split("\n")
         if not os.path.isfile(conf_file):
