@@ -53,7 +53,7 @@ path = string(default='~/Sandbox/ISM-Research')
 log_level = string(default='INFO')
 
 # Log file
-log_file = string(default='./flux433.log')
+log_file = string(default='flux433.log')
 ```
 
 ### CLI arguments

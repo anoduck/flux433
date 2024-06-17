@@ -16,7 +16,7 @@ class Run_RTL_433:
         self.log.info('Running rtl_433')
         process = Popen(["rtl_433", "-c", "rtl_433.conf"], stdout=sys.stdout, stderr=sys.stderr)
         while process.poll() is None:
-            dir_list = os.listdir(path)
+            dir_list = os.listdir(path[0])
             if len(dir_list) >= 1:
                 path_list = []
                 for file in dir_list:

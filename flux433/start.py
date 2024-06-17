@@ -63,7 +63,7 @@ watch = boolean(default=False)
 remove = boolean(default=False)
 
 # Path to Dir of JSON files or Json File
-path = string(default='~/Sandbox/ISM-Research')
+path = string(default='/var/run/flux433')
 
 # Systemd service
 # If set to true, watch and remove will be ignored
@@ -73,7 +73,7 @@ systemd = boolean(default=False)
 log_level = string(default='INFO')
 
 # Log file
-log_file = string(default='./flux433.log')
+log_file = string(default='/var/log/flux433.log')
 """
 
 
@@ -87,7 +87,7 @@ class options:
         path (str): Path to Dir of JSON files or Json File
     """
     config: str = 'config.ini'  # Configuration file
-    path: str = ''  # Path to Dir of JSON files or Json File (not for usage with systemd service)
+    path: str = ''  # Path to Dir of JSON files or Json File
 
 
 class Flux433:
@@ -128,10 +128,14 @@ class Flux433:
         else:
             path = self.pathfinder(config['path'])
         if config['systemd']:
+            if self.Options.path != '':
+                path = self.Options.path
+            else:
+                path = config['path']
             self.log.info("Running as systemd service")
             self.log.info("Watch is set to: {}".format(config['watch']))
             self.log.info("Remove is set to: {}".format(config['remove']))
-            self.log.info("Path is set to: {}".format(config['path']))
+            self.log.info("Path is set to: {}".format(path))
             start_433 = Run_RTL_433()
             start_433.run(config, path, self.log)
         if self.Options.path != '':
