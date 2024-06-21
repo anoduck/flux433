@@ -21,11 +21,13 @@ class Run_RTL_433:
                 path_list = []
                 for file in dir_list:
                     if file.endswith(".json"):
+                        self.log.debug(f'Found file: {file}')
                         path_list.append(os.path.join(path, file))
                 if len(path_list) >= 1:
+                    self.log.debug(f'Found files: {path_list}')
                     FF = FluxFile()
                     FF.load_files(config, path=path_list, watch=False, remove=True, log=self.log)
-            self.log.info('Waiting for files')
+            self.log.debug('Waiting for files')
             sleep(30)
             
 

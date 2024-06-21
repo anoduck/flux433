@@ -120,14 +120,15 @@ class Flux433:
             sys.exit()
         else:
             config = ConfigObj(conf_file, configspec=spec)
-        Logger = f433Log(config['log_file'], config['log_level'])
+        systemd = config['systemd']
+        Logger = f433Log(config['log_file'], config['log_level'], systemd)
         self.log = Logger.get_log()
         self.log.info("Starting flux433")
         if self.Options.path != '':
             path = self.pathfinder(self.Options.path)
         else:
             path = self.pathfinder(config['path'])
-        if config['systemd']:
+        if systemd:
             if self.Options.path != '':
                 path = self.Options.path
             else:

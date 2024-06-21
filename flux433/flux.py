@@ -57,11 +57,18 @@ class FluxFile:
         org = config['org']
         api = config['api']
         bucket = config['bucket']
+        creds = [org, api, bucket]
         if watch:
             self.watch(path, log)
         self.log.info('Client parameters: Org={}, API={}, Bucket={}'.format(org, api, bucket))
+        for value in creds:
+            if not value:
+                self.log.error(f'Missing credentials {value}')
+                print(f'Missing credentials {value}')
+                sys.exit(1)
         client = InfluxDBClient(url="http://127.0.0.1:8086",
                                 token=api, org=org)
+        self.log.info("Client Health: {}".format(client.health()))
         write_api = client.write_api(write_options=SYNCHRONOUS)
         for file in path:
             mime = self.test_mime(file)
