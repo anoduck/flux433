@@ -40,6 +40,8 @@ class f433Log(threading.Thread):
             handler = handlers.SysLogHandler(address='/dev/log')
             ormatter = logging.Formatter(
                 '%(asctime)s - %(levelname)s - %(message)s')
+            formatter = logging.Formatter(
+                '%(asctime)s - %(levelname)s - %(message)s')
             handler.setFormatter(formatter)
             log.addHandler(handler)
             log.info('## ========================================= ##')
