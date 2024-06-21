@@ -88,7 +88,7 @@ class options:
     """
     config: str = choice('/etc/flux433/config.ini',
                          os.path.join(os.getcwd(), 'config.ini'),
-                         os.path.join(os.environ.get('XDG_CONFIG_HOME'), 'flux433', 'config.ini'),
+                         os.path.expanduser('~/.config/flux433/config.ini'),
                          default='/etc/flux433/config.ini')   # Configuration file can be either /etc/flux433/config.ini or ~/.config/flux433/config.ini. Default is /etc/flux433/config.ini
     path: str = ''  # Path to Dir of JSON files or Json File
 
