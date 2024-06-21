@@ -24,7 +24,7 @@
 #           https://github.com/azrdev/rtl433_influx/.
 # For which, I neither claim nor take acclaim of, as that shit is not mine.
 # I keep it real.
-from simple_parsing import parse
+from simple_parsing import parse, choice
 from dataclasses import dataclass
 from configobj import ConfigObj
 from configobj.validate import Validator
@@ -86,7 +86,10 @@ class options:
     Args:
         path (str): Path to Dir of JSON files or Json File
     """
-    config: str = 'config.ini'  # Configuration file
+    config: str = choice('/etc/flux433/config.ini',
+                         os.path.join(os.getcwd(), 'config.ini'),
+                         os.path.join(os.environ.get('XDG_CONFIG_HOME'), 'flux433', 'config.ini'),
+                         default='/etc/flux433/config.ini')   # Configuration file can be either /etc/flux433/config.ini or ~/.config/flux433/config.ini. Default is /etc/flux433/config.ini
     path: str = ''  # Path to Dir of JSON files or Json File
 
 
@@ -105,21 +108,27 @@ class Flux433:
                     if name.endswith('.json'):
                         pathlist.append(os.path.join(root, name))
         return pathlist
-
-
-    def main(self):
-        conf_file = self.Options.config
+    
+    def cnf(self):
+        self.conf_file = self.Options.config
         config = ConfigObj()
         spec = cfg.split("\n")
-        if not os.path.isfile(conf_file):
-            config = ConfigObj(conf_file, configspec=spec)
-            config.filename = conf_file
+        if not os.path.isdir(os.path.dirname(self.conf_file)):
+            os.makedirs(os.path.dirname(self.conf_file))
+        if not os.path.isfile(self.conf_file):
+            config = ConfigObj(self.conf_file, configspec=spec)
+            # maybe made a mistake here.
+            config.filename = os.path.basename(self.conf_file)
             vader = Validator()
             config.validate(vader, copy=True)
             config.write()
             sys.exit()
         else:
-            config = ConfigObj(conf_file, configspec=spec)
+            config = ConfigObj(self.conf_file, configspec=spec)
+            return config
+
+    def main(self):
+        config = self.cnf()
         systemd = config['systemd']
         Logger = f433Log(config['log_file'], config['log_level'], systemd)
         self.log = Logger.get_log()
