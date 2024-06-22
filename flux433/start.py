@@ -90,6 +90,7 @@ class options:
                          os.path.join(os.getcwd(), 'config.ini'),
                          os.path.expanduser('~/.config/flux433/config.ini'),
                          default='/etc/flux433/config.ini')   # Configuration file can be either /etc/flux433/config.ini or ~/.config/flux433/config.ini. Default is /etc/flux433/config.ini
+    dupebuster: bool = False  # Merge duplicate entries
     path: str = ''  # Path to Dir of JSON files or Json File
 
 
@@ -130,7 +131,7 @@ class Flux433:
     def main(self):
         config = self.cnf()
         systemd = config['systemd']
-        Logger = f433Log(config['log_file'], config['log_level'], systemd)
+        Logger = f433Log(config['log_file'], config['log_level'], systemd) # type: ignore
         self.log = Logger.get_log()
         self.log.info("Starting flux433")
         if self.Options.path != '':
