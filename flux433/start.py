@@ -33,6 +33,7 @@ import sys
 from flux import FluxFile
 from proclog import f433Log
 from subproc import Run_RTL_433
+from dupbuster import DeDupe
 
 cfg = """
 ## Configuration file for myflux
@@ -134,6 +135,9 @@ class Flux433:
         Logger = f433Log(config['log_file'], config['log_level'], systemd) # type: ignore
         self.log = Logger.get_log()
         self.log.info("Starting flux433")
+        if self.Options.dupebuster:
+            debust = DeDupe(config, self.log)
+            debust.query()
         if self.Options.path != '':
             path = self.pathfinder(self.Options.path)
         else:
