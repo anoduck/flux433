@@ -394,3 +394,5 @@ rtl433.service
 rtl433json_to_influx.service
 flux433.log.1
 config.ini.backup
+fluxdata.json
+data_example.json

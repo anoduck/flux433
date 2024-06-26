@@ -16,6 +16,18 @@ The purpose of this project is the creation of a repository of decoded rtl_433 c
 
 Another planned feature is a continual query that will work towards removal of duplicate entries, while increasing the count of how many times the capture was seen.
 
+### Forward: Grievances with InfluxDB 2.0
+
+There are some significant differences between influx V1 and V2, that should be mentioned before one chooses to make the migration.
+
+1. In V2 the flux language is the primary language to interact with the database, yet they announced flux will no longer be supported afterwards. Which raises questions as to why it was even chosen as the primary language over influxql.
+
+2. The CLI shell is gone. They claim it's available, but it does not accept fluxql as arguments in the same manner as it once did. Which means you have to either interact with the database via the web client or programmatically. Either way, this makes administration and maintenance much more difficult. Also, we have already discovered one of the shell commands is incorrectly documented. The docs claim `SHOW TAG VALUES` will show you the tags used, but the command is actually `SHOW TAG KEYS`.
+
+3. Retention Policies are now referred to as DataBase Retention Policy mappings, and we are currently not sure how to manage or create them, because the method has changed. Supposedly, they can no longer be updated or modified, but can only be overriden. 
+
+These are just the few issues we have encountered so far in our light use of the two versions. Why they were allowed to be incorporated into a production release really begs the question concerning quality standards of the project. If the open source community is lucky, perhaps a few braves souls will take version one and fork into into a sustaining project. Regardless, our effort to migrate to V2 has already been completed, so we shall continue the effort for the moment.
+
 ### Installation
 
 You got two choices for installation, well... actually three. The big decision is if you want to run it as a service or not. If not, then either poetry or pipenv should work. If you want to run it as a service, then you will use the `setup.sh` script. The `setup.sh` script will create a systemd service that will run the script.

@@ -133,32 +133,33 @@ class Flux433:
         config = self.cnf()
         systemd = config['systemd']
         Logger = f433Log(config['log_file'], config['log_level'], systemd) # type: ignore
-        self.log = Logger.get_log()
+        self.log = Logger.get_log(self.Options)
         self.log.info("Starting flux433")
         if self.Options.dupebuster:
             debust = DeDupe(config, self.log)
             debust.query()
-        if self.Options.path != '':
-            path = self.pathfinder(self.Options.path)
         else:
-            path = self.pathfinder(config['path'])
-        if systemd:
             if self.Options.path != '':
-                path = self.Options.path
+                path = self.pathfinder(self.Options.path)
             else:
-                path = config['path']
-            self.log.info("Running as systemd service")
-            self.log.info("Watch is set to: {}".format(config['watch']))
-            self.log.info("Remove is set to: {}".format(config['remove']))
-            self.log.info("Path is set to: {}".format(path))
-            start_433 = Run_RTL_433()
-            start_433.run(config, path, self.log)
-        if self.Options.path != '':
-            path = self.pathfinder(self.Options.path)
-        else:
-            path = self.pathfinder(config['path'])
-        FF = FluxFile()
-        FF.load_files(config, path, watch=config['watch'], remove=config['remove'], log=self.log)
+                path = self.pathfinder(config['path'])
+            if systemd:
+                if self.Options.path != '':
+                    path = self.Options.path
+                else:
+                    path = config['path']
+                self.log.info("Running as systemd service")
+                self.log.info("Watch is set to: {}".format(config['watch']))
+                self.log.info("Remove is set to: {}".format(config['remove']))
+                self.log.info("Path is set to: {}".format(path))
+                start_433 = Run_RTL_433()
+                start_433.run(config, path, self.log)
+            if self.Options.path != '':
+                path = self.pathfinder(self.Options.path)
+            else:
+                path = self.pathfinder(config['path'])
+            FF = FluxFile()
+            FF.load_files(config, path, watch=config['watch'], remove=config['remove'], log=self.log)
 
 
 if __name__ == '__main__':

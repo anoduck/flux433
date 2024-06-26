@@ -21,8 +21,9 @@ class f433Log(threading.Thread):
         self.log = None
         self.start()
 
-    def get_log(self) -> logging.Logger:
-        if self.systemd:
+    def get_log(self, Options) -> logging.Logger:
+        dup = Options.dupebuster
+        if self.systemd and not dup:
             if self.lev is None:
                 self.lev = 'INFO'
             log = logging.getLogger(__name__)
